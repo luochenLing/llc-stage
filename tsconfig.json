@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "lib": ["ESNext", "DOM"],
+    "forceConsistentCasingInFileNames": false, // 对文件名称强制区分大小写，设置为true可能会导致默认导入index文件的时候因为系统要的是小写的而我们命名为大写然后产生报错
+    "noFallthroughCasesInSwitch": true, // 为 switch 语句启用错误报告
+    "module": "esnext", // 生成代码的模块化标准
+    "moduleResolution": "node", // 模块解析（查找）策略
+    "resolveJsonModule": true, // 允许导入扩展名为 .json 的模块
+    "allowJs": true, // 允许 ts 编译器编译 js 文件
+    "skipLibCheck": true, // 跳过声明文件的类型检查
+    "esModuleInterop": true, // es 模块互操作，屏蔽 ESModule和CommonJS之间的差异
+    "incremental": true, // TS编译器在第一次编译之后会生成一个存储编译信息的文件，第二次编译会在第一次的基础上进行增量编译，可以提高编译的速度
+    "tsBuildInfoFile": "./buildFile", // 增量编译文件的存储位置
+    "sourceMap": false, // 生成目标文件的sourceMap文件
+    // "types": ["react/next", "react-dom/next", "react/experimental"],
+    "jsx": "react-jsx" //例如，引用./App.jsx就可以直接写成 ./App
+  },
+  //哪些文件要遵守这个ts的规则
+  "include": [
+    "src",
+    "src/**/*.ts",
+    "src/**/*.d.ts",
+    "src/**/*.tsx",
+    "./externals.d.ts",
+  ],
+  //node_modules就排除在外吧
+  "exclude": ["node_modules"]
+}
