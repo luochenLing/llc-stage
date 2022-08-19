@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "webpack",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "npm run dev&& webpack serve --open"
+    "start:dev": "npm run dev&& webpack serve --open  --env=dev",
+    "start:prod": "npm run dev&& webpack serve --open --env=prod"
   },
   "keywords": [],
   "author": "",

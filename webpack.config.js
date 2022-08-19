@@ -18,12 +18,14 @@ function normalizeName(name) {
 }
 
 module.exports = (env) => {
+  // env.prod
+  // env.dev
   return {
-    mode: "development", //production  development
+    mode: env.dev?"development":"production", //production  development
     entry: {
       main: "./src/main.tsx", //key就是文件输出的命名
     },
-    devtool: "eval-source-map",
+    devtool: env.dev?"eval-source-map":"nosources-source-map",
     devServer: {
       historyApiFallback: true, //history模式下在开发环境能正常访问网页
       hot: true,
