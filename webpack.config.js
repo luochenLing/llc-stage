@@ -129,10 +129,10 @@ module.exports = (env) => {
         {
           test: /\.(png|svg|jpg|jpeg|gif)$/i,
           type: "asset/resource", //等同于file-loader
-          // generator: {
-          //   filename: 'static/[hash][ext][query]',
-          //   publicPath:'assets/'
-          // }
+          generator: {
+            filename: 'none',//不打包图片资源，使用CopyPlugin插件直接拷贝
+            publicPath:'/'
+          }
         },
       ],
     },
