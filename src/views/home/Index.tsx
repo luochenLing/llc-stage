@@ -1,8 +1,6 @@
 import { FC, memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import style from './style.less'
-//@ts-ignore
-// import AA from '~/assets/imgs/123.jpeg'
 
 type IProps = {};
 const Index: FC<IProps> = () => {

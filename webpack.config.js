@@ -6,26 +6,15 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
 const webpack = require("webpack"); //hrm热更新用到
 
-function normalizeName(name) {
-  return (
-    name
-      ?.replace(/node_modules/g, "nodemodules")
-      ?.replace(/[\-_.|]+/g, " ")
-      ?.replace(/\b(vendors|nodemodules|js|modules|es)\b/g, "")
-      ?.trim()
-      ?.replace(/ +/g, "-") || name
-  );
-}
-
 module.exports = (env) => {
   // env.prod
   // env.dev
   return {
-    mode: env.dev?"development":"production", //production  development
+    mode: env.dev ? "development" : "production", //production  development
     entry: {
       main: "./src/main.tsx", //key就是文件输出的命名
     },
-    devtool: env.dev?"eval-source-map":"nosources-source-map",
+    devtool: env.dev ? "eval-source-map" : "nosources-source-map",
     devServer: {
       historyApiFallback: true, //history模式下在开发环境能正常访问网页
       hot: true,
@@ -33,11 +22,12 @@ module.exports = (env) => {
       static: "./dist",
     },
     output: {
-      filename: '[name].[chunkhash].bundle.js', //key+哈希组成的名字
+      // filename: "[name].[chunkhash].bundle.js", //key+哈希组成的名字
       // filename:'[name][hash].js',
-      chunkFilename:'[name].js', //key+哈希组成的名字
+      chunkFilename: "[name].js", //key+哈希组成的名字
       path: path.resolve(__dirname, "dist"),
       clean: true,
+      assetModuleFilename: "src/assets/imgs/[name][ext]",
     },
     resolve: {
       alias: {
@@ -64,13 +54,17 @@ module.exports = (env) => {
       moduleIds: "deterministic",
       //提取公共代码，防止代码被重复打包，拆分过大的js文件，合并零散的js文件
       splitChunks: {
-        name:'vendors',//这里一定要加个自定义的名字，他会配合output的设置追加个哈希和后缀，不加名字的话，会显示一个好长的第三方包用下划线连起来的名字
+        name: "vendors", //这里一定要加个自定义的名字，他会配合output的设置追加个哈希和后缀，不加名字的话，会显示一个好长的第三方包用下划线连起来的名字
         //同步异步都提取到一个包
         chunks: "all",
       },
     },
     module: {
       rules: [
+        // {
+        //   test: /\.html$/i,
+        //   loader: 'html-loader',
+        // },
         {
           test: /\.(tsx|ts)?$/,
           use: "ts-loader",
@@ -107,32 +101,23 @@ module.exports = (env) => {
             },
           ],
         },
-        // {
-        //   test: /\.(png|svg|jpg|jpeg|gif)$/i,
-        //   generator: {
-        //      //指定文件输出的地址是哪个
-        //      outputPath: "./img",
-        //      type: "asset",
-        //   },
-        //   exclude: /node_modules/,
-        //   // use: [
-        //   //   {
-        //   //     loader: "file-loader",
-        //   //     options: {
-        //   //       //指定文件输出的地址是哪个
-        //   //       outputPath: "./img",
-        //   //       type: "asset",
-        //   //     },
-        //   //   },
-        //   // ],
-        // },
         {
+          //这里没找到处理img 里面src的方法，只能处理css里面的图片，所以用到了CopyPlugin做覆盖处理，但是需要assetModuleFilename的配置，将asset静态资源指定打包的输出地址
           test: /\.(png|svg|jpg|jpeg|gif)$/i,
-          type: "asset/resource", //等同于file-loader
-          generator: {
-            filename: 'none',//不打包图片资源，使用CopyPlugin插件直接拷贝
-            publicPath:'/'
-          }
+          type: "asset/resource",
+          //   parser: {
+          //     dataUrlCondition: {
+          //       maxSize: 10 * 1024,
+          //     },
+          //   },
+          //   generator: {
+          //     filename: "img/[name].[hash:6][ext]",
+          //     publicPath: "./",
+          //   },
+        },
+        {
+          test: /\.(woff|woff2|eot|ttf|otf)$/i,
+          type: "asset/resource",
         },
       ],
     },
@@ -142,13 +127,13 @@ module.exports = (env) => {
         template: "./public/index.html",
         // favicon: 'public/favicon.ico'
       }),
-      // //拷贝指定文件夹原样打包到指定目录
+      //拷贝指定文件夹原样打包到指定目录
       new CopyPlugin({
         patterns: [{ from: "./src/assets/imgs", to: "./src/assets/imgs" }],
       }),
       // //本插件会将 CSS 提取到单独的文件中，为每个包含 CSS 的 JS 文件创建一个 CSS 文件，并且支持 CSS 和 SourceMaps 的按需加载。
       new MiniCssExtractPlugin({
-        filename: '[name].css', //key+哈希组成的名字
+        filename: "[name].css", //key+哈希组成的名字
       }),
       // 实现刷新浏览器必写的热更新插件
       new webpack.HotModuleReplacementPlugin(),
