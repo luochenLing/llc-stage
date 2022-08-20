@@ -22,9 +22,8 @@ module.exports = (env) => {
       static: "./dist",
     },
     output: {
-      // filename: "[name].[chunkhash].bundle.js", //key+哈希组成的名字
-      // filename:'[name][hash].js',
-      chunkFilename: "[name].js", //key+哈希组成的名字
+      filename: "[name].[chunkhash].bundle.js", //key+哈希组成的名字
+      chunkFilename: "[name].[chunkhash].js", //key+哈希组成的名字，针对的是懒加载文件，例如react.lazy导入的文件
       path: path.resolve(__dirname, "dist"),
       clean: true,
       assetModuleFilename: "src/assets/imgs/[name][ext]",
