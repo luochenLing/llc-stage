@@ -4,7 +4,8 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 //把文件复制到打包后的指定位置
 const CopyPlugin = require("copy-webpack-plugin");
-const webpack = require("webpack"); //hrm热更新用到
+//react热更新插件
+const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
 
 module.exports = (env) => {
   // env.prod
@@ -60,10 +61,16 @@ module.exports = (env) => {
     },
     module: {
       rules: [
-        // {
-        //   test: /\.html$/i,
-        //   loader: 'html-loader',
-        // },
+        {
+          test: /\.m?js$/,
+          exclude: /(node_modules|bower_components)/,
+          use: {
+            loader: 'babel-loader',
+            options: {
+              presets: ['@babel/preset-env']
+            }
+          }
+        },
         {
           test: /\.(tsx|ts)?$/,
           use: "ts-loader",
@@ -134,8 +141,8 @@ module.exports = (env) => {
       new MiniCssExtractPlugin({
         filename: "[name].css", //key+哈希组成的名字
       }),
-      // 实现刷新浏览器必写的热更新插件
-      new webpack.HotModuleReplacementPlugin(),
+      // 开启react模块热替换插件
+      new ReactRefreshWebpackPlugin(),
     ],
   };
 };
