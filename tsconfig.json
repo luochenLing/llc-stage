@@ -22,8 +22,13 @@
     "src/**/*.ts",
     "src/**/*.d.ts",
     "src/**/*.tsx",
-    "./externals.d.ts",
+    "./externals.d.ts"
   ],
   //node_modules就排除在外吧
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules"],
+  "baseUrl": "./src",//这里的path和webpack的alias做个映射关系，若key的路径上不写/*，ts可能会找不到路径下面的文件，会触发ts的报错
+  "paths": {
+    "@components/*": ["components/*"],
+    "~/*": ["*"]
+  }
 }
