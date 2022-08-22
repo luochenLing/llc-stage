@@ -8,14 +8,14 @@ const isDev = process.env.NODE_ENV == "dev";
 
 module.exports = {
   entry: {
-    main: path.resolve(__dirname, '../src/main.tsx'), //key就是文件输出的命名
+    main: path.resolve(__dirname, "../src/main.tsx"), //key就是文件输出的命名
   },
   output: {
     filename: "[name].[chunkhash:8].bundle.js", //key+哈希组成的名字
     chunkFilename: "[name].[chunkhash:8].js", //key+哈希组成的名字，针对的是懒加载文件，例如react.lazy导入的文件
     path: path.resolve(__dirname, "../dist"),
     clean: true,
-    assetModuleFilename:"../src/assets/imgs/[name][ext]",//绝对路径会报错，就是不要path.resolve(__dirname, ".."),这么写
+    assetModuleFilename: "../src/assets/imgs/[name][ext]", //绝对路径会报错，就是不要path.resolve(__dirname, ".."),这么写
   },
   resolve: {
     alias: {
@@ -29,16 +29,21 @@ module.exports = {
       {
         test: /\.m?js$/,
         exclude: /(node_modules|bower_components)/,
-        use: {
-          loader: "babel-loader",
-          options: {
-            presets: [isDev && "@babel/preset-env"].filter(Boolean),
+        use: [
+          {
+            loader: "thread-loader",
           },
-        },
+          {
+            loader: "babel-loader",
+            options: {
+              presets: [isDev && "@babel/preset-env"].filter(Boolean),
+            },
+          }
+        ],
       },
       {
         test: /\.(tsx|ts)?$/,
-        use: "ts-loader",
+        use: ["ts-loader"],//thread-loader不能和ts-loader一起用，会不兼容而报错
         exclude: /node_modules/,
       },
       {
@@ -60,7 +65,11 @@ module.exports = {
             loader: "css-loader",
             options: {
               sourceMap: false,
-              modules: true,
+              // modules: true,
+              modules: {
+                localIdentName: "css__module__[name]__[local][chunkhash:8]", //加个css__module__前缀，防止purgecss-webpack-plugin打包的时候给排除了
+              },
+              importLoaders: 1,
             },
           },
           {
@@ -70,6 +79,9 @@ module.exports = {
                 strictMath: true,
               },
             },
+          },
+          {
+            loader: "postcss-loader",
           },
         ],
       },
@@ -92,14 +104,14 @@ module.exports = {
         type: "asset/resource",
       },
       {
-        test:/\.(mp4|webm|ogg|mp3|wav|flac|aac)$/, // 匹配媒体文件
+        test: /\.(mp4|webm|ogg|mp3|wav|flac|aac)$/, // 匹配媒体文件
         type: "asset", // type选择asset
         parser: {
           dataUrlCondition: {
             maxSize: 10 * 1024, // 小于10kb转base64位
-          }
+          },
         },
-      }
+      },
     ],
   },
   plugins: [
@@ -110,16 +122,20 @@ module.exports = {
       }),
     new HtmlWebpackPlugin({
       title: "llc-stage",
-      template:path.resolve(__dirname, "../public/index.html"),
+      template: path.resolve(__dirname, "../public/index.html"),
       // favicon: 'public/favicon.ico'
     }),
-    
     //拷贝指定文件夹原样打包到指定目录
     new CopyPlugin({
-      patterns: [{ from:path.resolve(__dirname,"../src/assets/imgs"), to: path.resolve(__dirname,"../dist/src/assets/imgs"), }],
+      patterns: [
+        {
+          from: path.resolve(__dirname, "../src/assets/imgs"),
+          to: path.resolve(__dirname, "../dist/src/assets/imgs"),
+        },
+      ],
     }),
   ].filter(Boolean),
-  
+
   // 开启webpack持久化存储缓存
   cache: {
     type: "filesystem", // 使用文件缓存

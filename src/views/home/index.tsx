@@ -7,7 +7,7 @@ const Index: FC<IProps> = () => {
   const navigate =  useNavigate()
   return <div className={style.title}>
     home
-    <img src="/src/assets/imgs/123.jpeg" alt="" />
+    <img className={style.img} src="/src/assets/imgs/123.jpeg" alt="" />
     <button onClick={()=>{
       navigate('/about')
     }}>关于我们</button>

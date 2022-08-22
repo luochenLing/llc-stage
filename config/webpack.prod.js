@@ -1,10 +1,26 @@
 const path = require("path");
 const { merge } = require("webpack-merge");
 const baseConfig = require("./webpack.base.js");
+const PurgeCSSPlugin = require("purgecss-webpack-plugin");
+const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
+const TerserPlugin = require("terser-webpack-plugin");
+const CompressionPlugin  = require('compression-webpack-plugin')
+const globAll = require("glob-all");
 
 module.exports = merge(baseConfig, {
   mode: "production", //production  development
   optimization: {
+    minimizer: [
+      // 压缩css
+      new CssMinimizerPlugin(),
+      // 压缩js
+      new TerserPlugin({
+        parallel: true, // 开启多线程压缩
+        terserOptions: {
+          compress: true,
+        },
+      }),
+    ],
     //设置为true以后webpack会启动摇树算法过滤掉未引用的文件，false的话则有自己的规则定义哪些文件可以包含到项目
     usedExports: true,
     //共享模块不设置这个会导致所有引用共享模块的地方都只是引用了地址不是单独的空间，利用缓存最小化更新，避免hash每次变化导致的文件重新生成会让浏览器重新请求
@@ -34,10 +50,30 @@ module.exports = merge(baseConfig, {
       },
       // name(_,_,cacheGroupKey){
       //   return cacheGroupKey
-      // }, 
+      // },
       //   //同步异步都提取到一个包
       //   chunks: "all",
     },
   },
-  plugins: [],
+  plugins: [
+    // 去除没用到的css插件
+    new PurgeCSSPlugin({
+      paths: globAll.sync([
+        `${path.join(__dirname, "../src")}/**/*.tsx`,
+        `${path.join(__dirname, "../public")}/index.html`,
+      ]),
+      safelist: {
+        standard: [/^ant-/], // 过滤以ant-开头的类名，哪怕没用到也不删除，如果是抖音库就过滤semi
+        deep: [/css__module__/],//因为这个插件会导致css模块化的样式被排除再外，所以这里要做个过滤
+      },
+    }),
+    // 打包生成gzip插件
+    new CompressionPlugin({
+      test: /\.(js|css)$/, // 只生成css,js压缩文件
+      filename: "[path][base].gz", // 文件命名
+      algorithm: "gzip", // 压缩格式，默认是gzip
+      threshold: 10240, // 只有大小大于该值的资源会被处理。默认值是 10k
+      minRatio: 0.8, // 压缩率,默认值是 0.8
+    }),
+  ],
 });
