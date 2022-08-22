@@ -10,7 +10,7 @@ const Index: FC<IProps> = () => {
     <img src="/src/assets/imgs/123.jpeg" alt="" />
     <button onClick={()=>{
       navigate('/about')
-    }}>关于我们心脏彩超</button>
+    }}>关于我们</button>
   </div>;
 };
 Index.displayName ='Index'
