@@ -4,7 +4,7 @@
   "description": "",
   "main": "./dist/main/js",
   "scripts": {
-    "start": "cross-env NODE_ENV=dev webpack-dev-server --open -c config/webpack.dev.js ",
+    "start": "cross-env NODE_ENV=dev webpack server --open -c config/webpack.dev.js ",
     "build": "cross-env NODE_ENV=prod webpack build -c config/webpack.prod.js "
   },
   "keywords": [],
