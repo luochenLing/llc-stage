@@ -22,7 +22,7 @@ module.exports = {
       "~": path.resolve(__dirname, "../src"),
       "@components": path.resolve(__dirname, "../src/components"),
     },
-    extensions: [".js", ".jsx", ".json", ".tsx"], //表示这几个的后缀名可省略，webpack打包的时候看到这种省略后缀名的文件会先从这个集合中匹配
+    extensions: [".js", ".jsx", ".json", ".tsx",".ts"], //表示这几个的后缀名可省略，webpack打包的时候看到这种省略后缀名的文件会先从这个集合中匹配
   },
   module: {
     rules: [
